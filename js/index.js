@@ -1,10 +1,14 @@
 class CountdownTimer {
     constructor({ onCount }) {
+        this.deadline = new Date("Aug 19, 2021 21:26:25");
         this.onCount = onCount;
+        this.intervalId = null;
+
     }
+
     start() {
-        const startTime = new Date("Sep 5, 2021 15:37:25").getTime();
-        setInterval(() => {
+        const startTime = this.deadline.getTime();
+        this.intervalId = setInterval(() => {
             const currentTime = new Date().getTime();
             const deltaTime = startTime - currentTime;
             const time = this.getTimeElements(deltaTime);
@@ -14,10 +18,16 @@ class CountdownTimer {
 
     }
 
+
     pad(value) {
         return String(value).padStart(2, '0');
     }
     getTimeElements(time) {
+        if (time < 0) {
+            clearInterval(this.intervalId);
+            timerInterface.textContent = 'EXPIRED';
+        }
+
         const days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
         const hours = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
         const mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
@@ -29,7 +39,7 @@ class CountdownTimer {
 
 
 }
-
+const timerInterface = document.querySelector('#timer-1');
 const daysCounter = document.querySelector('[data-value="days"]');
 const hoursCounter = document.querySelector('[data-value="hours"]');
 console.log(hoursCounter);
@@ -39,11 +49,14 @@ console.log(secsCounter);
 
 
 const countdownTimer = new CountdownTimer({
-    onCount: updateTimerInterface
+    onCount: updateTimerInterface,
+
 
 });
 
 countdownTimer.start();
+
+
 
 function updateTimerInterface({ days, hours, mins, secs }) {
     daysCounter.textContent = `${days}`;
